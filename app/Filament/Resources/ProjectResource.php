@@ -214,7 +214,7 @@ class ProjectResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->formatStateUsing(function ($state) {
-                        return $state ? $state : __('Active');
+                        return $state ? $state->format('Y-m-d H:i:s') : __('Active');
                     })
                     ->color(function ($state) {
                         return $state ? 'danger' : 'success';
