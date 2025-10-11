@@ -16,6 +16,8 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
@@ -46,6 +48,14 @@ class ProjectResource extends Resource
     protected static function getNavigationGroup(): ?string
     {
         return __('Management');
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
     }
 
     public static function form(Form $form): Form
@@ -197,8 +207,22 @@ class ProjectResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->searchable(),
+
+                Tables\Columns\TextColumn::make('deleted_at')
+                    ->label(__('Deleted at'))
+                    ->dateTime()
+                    ->sortable()
+                    ->searchable()
+                    ->formatStateUsing(function ($state) {
+                        return $state ? $state : __('Active');
+                    })
+                    ->color(function ($state) {
+                        return $state ? 'danger' : 'success';
+                    }),
             ])
             ->filters([
+                Tables\Filters\TrashedFilter::make(),
+
                 Tables\Filters\SelectFilter::make('owner_id')
                     ->label(__('Owner'))
                     ->multiple()
@@ -234,6 +258,14 @@ class ProjectResource extends Resource
 
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                
+                Tables\Actions\RestoreAction::make()
+                    ->visible(fn ($record) => $record->trashed() && auth()->user()->can('restore', $record))
+                    ->requiresConfirmation(),
+                    
+                Tables\Actions\ForceDeleteAction::make()
+                    ->visible(fn ($record) => $record->trashed() && auth()->user()->can('forceDelete', $record))
+                    ->requiresConfirmation(),
 
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\Action::make('exportLogHours')
@@ -264,7 +296,12 @@ class ProjectResource extends Resource
                 ])->color('secondary'),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\DeleteBulkAction::make()
+                    ->visible(fn () => auth()->user()->can('delete', Project::class)),
+                Tables\Actions\RestoreBulkAction::make()
+                    ->visible(fn () => auth()->user()->can('restore', Project::class)),
+                Tables\Actions\ForceDeleteBulkAction::make()
+                    ->visible(fn () => auth()->user()->can('forceDelete', Project::class)),
             ]);
     }
 
