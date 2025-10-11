@@ -129,9 +129,9 @@ return [
 
             // Types list
             'list' => [
-                'related_to' => 'Related to',
-                'blocked_by' => 'Blocked by',
-                'duplicate_of' => 'Duplicate of'
+                'related_to' => 'İlgili',
+                'blocked_by' => 'Engellenen',
+                'duplicate_of' => 'Kopya'
             ],
 
             // Types colors
