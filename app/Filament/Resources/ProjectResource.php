@@ -260,11 +260,11 @@ class ProjectResource extends Resource
                 Tables\Actions\EditAction::make(),
                 
                 Tables\Actions\RestoreAction::make()
-                    ->visible(fn ($record) => $record->trashed() && auth()->user()->can('restore', $record))
+                    ->visible(fn ($record) => $record->trashed())
                     ->requiresConfirmation(),
                     
                 Tables\Actions\ForceDeleteAction::make()
-                    ->visible(fn ($record) => $record->trashed() && auth()->user()->can('forceDelete', $record))
+                    ->visible(fn ($record) => $record->trashed())
                     ->requiresConfirmation(),
 
                 Tables\Actions\ActionGroup::make([
@@ -296,12 +296,9 @@ class ProjectResource extends Resource
                 ])->color('secondary'),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make()
-                    ->visible(fn () => auth()->user()->can('delete', Project::class)),
-                Tables\Actions\RestoreBulkAction::make()
-                    ->visible(fn () => auth()->user()->can('restore', Project::class)),
-                Tables\Actions\ForceDeleteBulkAction::make()
-                    ->visible(fn () => auth()->user()->can('forceDelete', Project::class)),
+                Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\RestoreBulkAction::make(),
+                Tables\Actions\ForceDeleteBulkAction::make(),
             ]);
     }
 

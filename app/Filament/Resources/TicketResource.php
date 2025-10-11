@@ -374,20 +374,17 @@ class TicketResource extends Resource
                 Tables\Actions\EditAction::make(),
                 
                 Tables\Actions\RestoreAction::make()
-                    ->visible(fn ($record) => $record->trashed() && auth()->user()->can('restore', $record))
+                    ->visible(fn ($record) => $record->trashed())
                     ->requiresConfirmation(),
                     
                 Tables\Actions\ForceDeleteAction::make()
-                    ->visible(fn ($record) => $record->trashed() && auth()->user()->can('forceDelete', $record))
+                    ->visible(fn ($record) => $record->trashed())
                     ->requiresConfirmation(),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make()
-                    ->visible(fn () => auth()->user()->can('delete', Ticket::class)),
-                Tables\Actions\RestoreBulkAction::make()
-                    ->visible(fn () => auth()->user()->can('restore', Ticket::class)),
-                Tables\Actions\ForceDeleteBulkAction::make()
-                    ->visible(fn () => auth()->user()->can('forceDelete', Ticket::class)),
+                Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\RestoreBulkAction::make(),
+                Tables\Actions\ForceDeleteBulkAction::make(),
             ]);
     }
 
