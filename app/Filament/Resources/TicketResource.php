@@ -39,6 +39,11 @@ class TicketResource extends Resource
         return static::getNavigationLabel();
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('Ticket');
+    }
+
     protected static function getNavigationGroup(): ?string
     {
         return __('Management');
