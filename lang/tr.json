@@ -95,8 +95,8 @@
     "Project:": "Proje:",
     "Projects": "Projeler",
     "Refresh": "Yenile",
-    "Related ticket": "İlgili bilet",
-    "Relation type": "ilişki türü",
+    "Related ticket": "İlgili talep",
+    "Relation type": "İlişki türü",
     "Reset filters": "Filtreleri sıfırla",
     "Responsible": "Sorumlu",
     "Responsible:": "Sorumlu:",
@@ -261,5 +261,11 @@
     "The platform default role (used mainly in OIDC Connect).": "Platform varsayılan rolü (esas olarak OIDC Connect'te kullanılır).",
     "OIDC Connect error": "OIDC Bağlantı hatası",
     "Invalid account!": "Geçersiz hesap!",
-    "OIDC Connect": "OIDC Bağlantısı"
+    "OIDC Connect": "OIDC Bağlantısı",
+    "Epic": "Epik",
+    "Owner": "Sahip",
+    "Responsible": "Sorumlu",
+    "Status": "Durum",
+    "Type": "Tip",
+    "Priority": "Öncelik"
 }
