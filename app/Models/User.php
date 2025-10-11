@@ -123,4 +123,9 @@ class User extends Authenticatable implements FilamentUser
     {
         return true;
     }
+
+    public function getPendingEmail(): ?string
+    {
+        return null; // Bu projede pending email özelliği kullanılmıyor
+    }
 }

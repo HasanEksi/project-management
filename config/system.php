@@ -131,7 +131,7 @@ return [
             'list' => [
                 'related_to' => 'İlgili',
                 'blocked_by' => 'Engellenen',
-                'duplicate_of' => 'Kopya'
+                'duplicate_of' => 'Mükerrer'
             ],
 
             // Types colors
