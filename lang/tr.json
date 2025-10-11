@@ -305,11 +305,5 @@
     "Comment": "Yorum",
     "Role": "Rol",
     "Permission": "İzin",
-    "Activity": "Aktivite",
-    "Deleted at": "Silinme tarihi",
-    "Active": "Aktif",
-    "Restore": "Geri yükle",
-    "Force delete": "Kalıcı olarak sil",
-    "Restore selected": "Seçilenleri geri yükle",
-    "Force delete selected": "Seçilenleri kalıcı olarak sil"
+    "Activity": "Aktivite"
 }
