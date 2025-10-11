@@ -119,6 +119,8 @@ class TicketResource extends Resource
                                     ->searchable()
                                     ->options(fn() => User::all()->pluck('name', 'id')->toArray())
                                     ->default(fn() => auth()->user()->id)
+                                    ->disabled()
+                                    ->dehydrated()
                                     ->required(),
 
                                 Forms\Components\Select::make('responsible_id')
