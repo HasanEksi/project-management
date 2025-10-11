@@ -61,6 +61,24 @@ class UserResource extends Resource
                                     )
                                     ->maxLength(255),
 
+                                Forms\Components\TextInput::make('password')
+                                    ->label(__('Password'))
+                                    ->password()
+                                    ->required(fn (string $context): bool => $context === 'create')
+                                    ->minLength(8)
+                                    ->dehydrated(fn ($state) => filled($state))
+                                    ->dehydrateStateUsing(fn ($state) => bcrypt($state))
+                                    ->same('password_confirmation')
+                                    ->maxLength(255),
+
+                                Forms\Components\TextInput::make('password_confirmation')
+                                    ->label(__('Password confirmation'))
+                                    ->password()
+                                    ->required(fn (string $context): bool => $context === 'create')
+                                    ->minLength(8)
+                                    ->dehydrated(false)
+                                    ->maxLength(255),
+
                                 Forms\Components\CheckboxList::make('roles')
                                     ->label(__('Permission roles'))
                                     ->required()
