@@ -311,8 +311,12 @@ class TicketResource extends Resource
                 ->dateTime()
                 ->sortable()
                 ->searchable()
-                ->formatStateUsing(fn ($state) => $state ? $state : __('Active'))
-                ->color(fn ($state) => $state ? 'danger' : 'success'),
+                ->formatStateUsing(function ($state) {
+                    return $state ? $state : __('Active');
+                })
+                ->color(function ($state) {
+                    return $state ? 'danger' : 'success';
+                }),
         ]);
         return $columns;
     }
