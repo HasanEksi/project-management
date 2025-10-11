@@ -23,7 +23,7 @@ class PermissionsSeeder extends Seeder
     ];
 
     private array $singularActions = [
-        'View', 'Create', 'Update', 'Delete'
+        'View', 'Create', 'Update', 'Delete', 'Restore', 'Force Delete'
     ];
 
     private array $extraPermissions = [

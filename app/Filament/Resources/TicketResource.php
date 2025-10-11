@@ -19,6 +19,8 @@ use Filament\Resources\Pages\EditRecord;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
 
 class TicketResource extends Resource
@@ -310,8 +312,13 @@ class TicketResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query) => $query->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]))
             ->columns(self::tableColumns())
             ->filters([
+                Tables\Filters\TrashedFilter::make(),
+
                 Tables\Filters\SelectFilter::make('project_id')
                     ->label(__('Project'))
                     ->multiple()
@@ -348,9 +355,22 @@ class TicketResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                
+                Tables\Actions\RestoreAction::make()
+                    ->visible(fn ($record) => $record->trashed() && auth()->user()->can('restore', $record))
+                    ->requiresConfirmation(),
+                    
+                Tables\Actions\ForceDeleteAction::make()
+                    ->visible(fn ($record) => $record->trashed() && auth()->user()->can('forceDelete', $record))
+                    ->requiresConfirmation(),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\DeleteBulkAction::make()
+                    ->visible(fn () => auth()->user()->can('delete', Ticket::class)),
+                Tables\Actions\RestoreBulkAction::make()
+                    ->visible(fn () => auth()->user()->can('restore', Ticket::class)),
+                Tables\Actions\ForceDeleteBulkAction::make()
+                    ->visible(fn () => auth()->user()->can('forceDelete', Ticket::class)),
             ]);
     }
 
