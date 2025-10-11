@@ -72,10 +72,34 @@ class ProjectPolicy
      * Determine whether the user can delete the model.
      *
      * @param \App\Models\User $user
-     * @param \App\Models\Project $project
+     * @param \App\Models\Project|null $project
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Project $project)
+    public function delete(User $user, Project $project = null)
+    {
+        return $user->can('Delete project');
+    }
+
+    /**
+     * Determine whether the user can restore the model.
+     *
+     * @param \App\Models\User $user
+     * @param \App\Models\Project|null $project
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function restore(User $user, Project $project = null)
+    {
+        return $user->can('Delete project');
+    }
+
+    /**
+     * Determine whether the user can permanently delete the model.
+     *
+     * @param \App\Models\User $user
+     * @param \App\Models\Project|null $project
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function forceDelete(User $user, Project $project = null)
     {
         return $user->can('Delete project');
     }
