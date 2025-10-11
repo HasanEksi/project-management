@@ -38,6 +38,11 @@ class ProjectResource extends Resource
         return static::getNavigationLabel();
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('Project');
+    }
+
     protected static function getNavigationGroup(): ?string
     {
         return __('Management');
