@@ -19,8 +19,6 @@ use Filament\Resources\Pages\EditRecord;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
 
 class TicketResource extends Resource
@@ -49,14 +47,6 @@ class TicketResource extends Resource
     protected static function getNavigationGroup(): ?string
     {
         return __('Management');
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
     }
 
     public static function form(Form $form): Form
@@ -313,18 +303,6 @@ class TicketResource extends Resource
                 ->dateTime()
                 ->sortable()
                 ->searchable(),
-
-            Tables\Columns\TextColumn::make('deleted_at')
-                ->label(__('Deleted at'))
-                ->dateTime()
-                ->sortable()
-                ->searchable()
-                ->formatStateUsing(function ($state) {
-                    return $state ? $state->format('Y-m-d H:i:s') : __('Active');
-                })
-                ->color(function ($state) {
-                    return $state ? 'danger' : 'success';
-                }),
         ]);
         return $columns;
     }
@@ -334,8 +312,6 @@ class TicketResource extends Resource
         return $table
             ->columns(self::tableColumns())
             ->filters([
-                Tables\Filters\TrashedFilter::make(),
-
                 Tables\Filters\SelectFilter::make('project_id')
                     ->label(__('Project'))
                     ->multiple()
@@ -372,19 +348,9 @@ class TicketResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                
-                Tables\Actions\RestoreAction::make()
-                    ->visible(fn ($record) => $record->trashed())
-                    ->requiresConfirmation(),
-                    
-                Tables\Actions\ForceDeleteAction::make()
-                    ->visible(fn ($record) => $record->trashed())
-                    ->requiresConfirmation(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
-                Tables\Actions\RestoreBulkAction::make(),
-                Tables\Actions\ForceDeleteBulkAction::make(),
             ]);
     }
 
