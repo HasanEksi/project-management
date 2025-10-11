@@ -213,8 +213,8 @@ class ProjectResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->searchable()
-                    ->placeholder(__('Active'))
-                    ->color('danger'),
+                    ->formatStateUsing(fn ($state) => $state ? $state : __('Active'))
+                    ->color(fn ($state) => $state ? 'danger' : 'success'),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),

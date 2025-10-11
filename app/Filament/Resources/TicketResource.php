@@ -305,6 +305,14 @@ class TicketResource extends Resource
                 ->dateTime()
                 ->sortable()
                 ->searchable(),
+
+            Tables\Columns\TextColumn::make('deleted_at')
+                ->label(__('Deleted at'))
+                ->dateTime()
+                ->sortable()
+                ->searchable()
+                ->formatStateUsing(fn ($state) => $state ? $state : __('Active'))
+                ->color(fn ($state) => $state ? 'danger' : 'success'),
         ]);
         return $columns;
     }
