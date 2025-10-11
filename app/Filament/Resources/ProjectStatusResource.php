@@ -29,6 +29,11 @@ class ProjectStatusResource extends Resource
         return static::getNavigationLabel();
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('Project status');
+    }
+
     protected static function getNavigationGroup(): ?string
     {
         return __('Referential');

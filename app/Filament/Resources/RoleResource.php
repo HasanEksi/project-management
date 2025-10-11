@@ -30,6 +30,11 @@ class RoleResource extends Resource
         return static::getNavigationLabel();
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('Role');
+    }
+
     protected static function getNavigationGroup(): ?string
     {
         return __('Permissions');

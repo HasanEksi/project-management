@@ -32,6 +32,11 @@ class TicketPriorityResource extends Resource
         return static::getNavigationLabel();
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('Ticket priority');
+    }
+
     protected static function getNavigationGroup(): ?string
     {
         return __('Referential');

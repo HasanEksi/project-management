@@ -31,6 +31,11 @@ class TicketTypeResource extends Resource
         return static::getNavigationLabel();
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('Ticket type');
+    }
+
     protected static function getNavigationGroup(): ?string
     {
         return __('Referential');

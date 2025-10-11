@@ -29,6 +29,11 @@ class ActivityResource extends Resource
         return static::getNavigationLabel();
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('Activity');
+    }
+
     protected static function getNavigationGroup(): ?string
     {
         return __('Referential');
