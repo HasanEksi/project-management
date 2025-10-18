@@ -354,7 +354,11 @@ class TicketResource extends Resource
                 Tables\Filters\SelectFilter::make('priority_id')
                     ->label(__('Priority'))
                     ->multiple()
-                    ->options(fn() => TicketPriority::all()->pluck('name', 'id')->toArray()),
+                    ->options(fn() => TicketPriority::all()->pluck('name', 'id')->toArray())
+                    ->default(function () {
+                        $highPriority = TicketPriority::whereIn('name', ['Yüksek', 'High', 'Kritik', 'Critical'])->pluck('id')->toArray();
+                        return $highPriority;
+                    }),
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
