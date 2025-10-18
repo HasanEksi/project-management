@@ -313,6 +313,30 @@ class TicketResource extends Resource
     {
         return $table
             ->columns(self::tableColumns())
+            ->recordUrl(function ($record) {
+                // Kritik veya hata talepleri için özel stil
+                $priorityName = strtolower($record->priority->name);
+                $typeName = strtolower($record->type->name);
+                
+                if (in_array($priorityName, ['kritik', 'critical', 'yüksek', 'high']) || 
+                    in_array($typeName, ['hata', 'error', 'bug', 'kritik', 'critical'])) {
+                    return null; // URL'yi devre dışı bırak
+                }
+                
+                return null;
+            })
+            ->recordClasses(function ($record) {
+                $priorityName = strtolower($record->priority->name);
+                $typeName = strtolower($record->type->name);
+                
+                // Kritik veya hata talepleri için vurgulu stil
+                if (in_array($priorityName, ['kritik', 'critical', 'yüksek', 'high']) || 
+                    in_array($typeName, ['hata', 'error', 'bug', 'kritik', 'critical'])) {
+                    return 'bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 font-semibold';
+                }
+                
+                return '';
+            })
             ->filters([
                 Tables\Filters\SelectFilter::make('project_id')
                     ->label(__('Project'))
@@ -351,7 +375,8 @@ class TicketResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
 
-                Tables\Actions\Action::make('assign')
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('assign')
                     ->label(__('Assign'))
                     ->form([
                         Forms\Components\Select::make('responsible_id')
@@ -436,6 +461,12 @@ class TicketResource extends Resource
                     })
                     ->icon('heroicon-o-check')
                     ->color('success'),
+                ])
+                ->label(__('Actions'))
+                ->icon('heroicon-o-ellipsis-horizontal')
+                ->color('gray')
+                ->button()
+                ->size('sm'),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
