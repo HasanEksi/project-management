@@ -386,7 +386,7 @@ class TicketResource extends Resource
 
                         \Filament\Facades\Filament::notify('success', __('Ticket assigned successfully'));
                     })
-                    ->icon('heroicon-o-user-plus')
+                    ->icon('heroicon-o-user')
                     ->color('primary'),
 
                 Tables\Actions\Action::make('resolve')
@@ -434,7 +434,7 @@ class TicketResource extends Resource
 
                         \Filament\Facades\Filament::notify('success', __('Ticket resolved successfully'));
                     })
-                    ->icon('heroicon-o-document-check')
+                    ->icon('heroicon-o-check')
                     ->color('success'),
             ])
             ->bulkActions([
