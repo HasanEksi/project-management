@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\TicketResource\Pages;
 
 use App\Filament\Resources\TicketResource;
+use App\Models\Project;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
@@ -36,5 +37,29 @@ class ListTickets extends ListRecords
                             });
                     });
             });
+    }
+
+    public function getTabs(): array
+    {
+        $projects = Project::where('owner_id', auth()->user()->id)
+            ->orWhereHas('users', function ($query) {
+                return $query->where('users.id', auth()->user()->id);
+            })
+            ->get();
+
+        $tabs = [
+            'all' => 'Tümü',
+        ];
+
+        foreach ($projects as $project) {
+            $tabs[$project->id] = $project->name;
+        }
+
+        return $tabs;
+    }
+
+    public function getActiveTab(): string
+    {
+        return request()->get('project', 'all');
     }
 }

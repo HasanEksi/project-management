@@ -322,6 +322,12 @@ class TicketResource extends Resource
     {
         return $table
             ->columns(self::tableColumns())
+            ->modifyQueryUsing(function ($query) {
+                $projectId = request()->get('project');
+                if ($projectId && $projectId !== 'all') {
+                    $query->where('project_id', $projectId);
+                }
+            })
             ->filters([
                 Tables\Filters\SelectFilter::make('project_id')
                     ->label(__('Project'))
