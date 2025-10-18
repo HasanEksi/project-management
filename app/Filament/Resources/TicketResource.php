@@ -19,6 +19,8 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Illuminate\Support\HtmlString;
+use Closure;
+use Illuminate\Database\Eloquent\Model;
 
 class TicketResource extends Resource
 {
@@ -322,18 +324,6 @@ class TicketResource extends Resource
     {
         return $table
             ->columns(self::tableColumns())
-            ->recordClasses(function ($record) {
-                $priorityName = strtolower($record->priority->name);
-                $typeName = strtolower($record->type->name);
-                $isHighPriority = in_array($priorityName, ['yüksek', 'high', 'kritik', 'critical']);
-                $isErrorType = in_array($typeName, ['hata', 'error', 'bug']);
-                
-                if ($isHighPriority && $isErrorType) {
-                    return 'bg-bisque';
-                }
-                
-                return null;
-            })
             ->filters([
                 Tables\Filters\SelectFilter::make('project_id')
                     ->label(__('Project'))
@@ -496,5 +486,21 @@ class TicketResource extends Resource
             'view' => Pages\ViewTicket::route('/{record}'),
             'edit' => Pages\EditTicket::route('/{record}/edit'),
         ];
+    }
+
+    protected function getTableRecordClassesUsing(): ?Closure
+    {
+        return function (Model $record) {
+            $priorityName = strtolower($record->priority->name);
+            $typeName = strtolower($record->type->name);
+            $isHighPriority = in_array($priorityName, ['yüksek', 'high', 'kritik', 'critical']);
+            $isErrorType = in_array($typeName, ['hata', 'error', 'bug']);
+            
+            if ($isHighPriority && $isErrorType) {
+                return 'bg-bisque';
+            }
+            
+            return null;
+        };
     }
 }
