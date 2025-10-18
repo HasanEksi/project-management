@@ -43,10 +43,10 @@ class ListTickets extends ListRecords
 
     public function getTableTabs(): array
     {
-        $projects = Project::where('owner_id', auth()->user()->id)
-            ->orWhereHas('users', function ($query) {
+        $projects = Project::whereHas('users', function ($query) {
                 return $query->where('users.id', auth()->user()->id);
             })
+            ->orWhere('owner_id', auth()->user()->id)
             ->get();
 
         $tabs = [
