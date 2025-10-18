@@ -83,7 +83,17 @@ class AppServiceProvider extends ServiceProvider
                 {
                     $data = $notification->toSms($notifiable);
                     $smsSender = new SmsSender();
-                    return $smsSender->sendSingle($data);
+                    $result = $smsSender->sendSingle($data);
+                    
+                    // Filament bildirimini göster
+                    if (isset($result['result']) && $result['result']) {
+                        \Filament\Facades\Filament::notify('success', __('SMS sent successfully to :phone', ['phone' => $notifiable->phone]));
+                    } else {
+                        \Filament\Facades\Filament::notify('danger', __('SMS sending failed to :phone', ['phone' => $notifiable->phone]));
+                        \Log::error('SMS gönderimi başarısız: ' . json_encode($result['error'] ?? []));
+                    }
+                    
+                    return $result;
                 }
             };
         });

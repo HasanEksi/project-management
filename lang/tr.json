@@ -317,5 +317,9 @@
     "Solution time": "Çözüm zamanı",
     "Ticket assigned successfully": "Talep başarıyla atandı",
     "Ticket resolved successfully": "Talep başarıyla sonuçlandırıldı",
-    "Actions": "İşlemler"
+    "Actions": "İşlemler",
+    "SMS sent successfully to :phone": "SMS :phone numarasına başarıyla gönderildi",
+    "SMS sending failed to :phone": "SMS :phone numarasına gönderilemedi",
+    "SMS could not be sent: Responsible person has no phone number": "SMS gönderilemedi: Sorumlu kişinin telefon numarası yok",
+    "SMS could not be sent: Ticket owner has no phone number": "SMS gönderilemedi: Talep sahibinin telefon numarası yok"
 }

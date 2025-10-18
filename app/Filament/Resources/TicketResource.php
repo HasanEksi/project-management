@@ -392,9 +392,14 @@ class TicketResource extends Resource
 
                             $result = $smsSender->sendSingle($messageData);
 
-                            if (!isset($result['result']) || !$result['result']) {
+                            if (isset($result['result']) && $result['result']) {
+                                \Filament\Facades\Filament::notify('success', __('SMS sent successfully to :phone', ['phone' => $phoneNumber]));
+                            } else {
+                                \Filament\Facades\Filament::notify('danger', __('SMS sending failed to :phone', ['phone' => $phoneNumber]));
                                 \Log::error('SMS gönderimi başarısız: ' . json_encode($result['error'] ?? []));
                             }
+                        } else {
+                            \Filament\Facades\Filament::notify('warning', __('SMS could not be sent: Responsible person has no phone number'));
                         }
 
                         \Filament\Facades\Filament::notify('success', __('Ticket assigned successfully'));
@@ -440,9 +445,14 @@ class TicketResource extends Resource
 
                             $result = $smsSender->sendSingle($messageData);
 
-                            if (!isset($result['result']) || !$result['result']) {
+                            if (isset($result['result']) && $result['result']) {
+                                \Filament\Facades\Filament::notify('success', __('SMS sent successfully to :phone', ['phone' => $phoneNumber]));
+                            } else {
+                                \Filament\Facades\Filament::notify('danger', __('SMS sending failed to :phone', ['phone' => $phoneNumber]));
                                 \Log::error('SMS gönderimi başarısız: ' . json_encode($result['error'] ?? []));
                             }
+                        } else {
+                            \Filament\Facades\Filament::notify('warning', __('SMS could not be sent: Ticket owner has no phone number'));
                         }
 
                         \Filament\Facades\Filament::notify('success', __('Ticket resolved successfully'));
