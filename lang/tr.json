@@ -310,5 +310,11 @@
     "Define relationships between this ticket and other tickets": "Bu talep ile diğer talepler arasındaki ilişkileri tanımlayın",
     "Phone": "Telefon",
     "Old status": "Eski durum",
-    "New status": "Yeni durum"
+    "New status": "Yeni durum",
+    "Assign": "Atama",
+    "Resolve": "Sonuçlandır",
+    "Result message": "Sonuç mesajı",
+    "Solution time": "Çözüm zamanı",
+    "Ticket assigned successfully": "Talep başarıyla atandı",
+    "Ticket resolved successfully": "Talep başarıyla sonuçlandırıldı"
 }

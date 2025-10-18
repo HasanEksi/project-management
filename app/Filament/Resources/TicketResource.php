@@ -350,6 +350,102 @@ class TicketResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+
+                Tables\Actions\Action::make('assign')
+                    ->label(__('Assign'))
+                    ->form([
+                        Forms\Components\Select::make('responsible_id')
+                            ->options(fn() => User::all()->pluck('name', 'id'))
+                            ->label(__('Ticket responsible'))
+                            ->default(fn(Ticket $record) => $record->responsible_id)
+                            ->required(),
+                    ])
+                    ->action(function (array $data, Ticket $record) {
+                        $record->responsible_id = $data['responsible_id'];
+                        $record->save();
+
+                        $ticketCreatedAt = $record->created_at->format('d.m.Y H:i');
+                        $ticketName = $record->name;
+                        $ticketPriority = $record->priority->name;
+                        $ticketType = $record->type->name;
+                        $smsSender = app(\App\Http\Helpers\SmsSender::class);
+                        $phoneNumber = $record->responsible->phone;
+
+                        if ($phoneNumber) {
+                            $messageData = [
+                                'messageBody' => $ticketCreatedAt . ' tarihinde oluşturulan "' . $ticketName . '" başlıklı talep size atandı. Öncelik: ' . $ticketPriority . ', Tür: ' . $ticketType,
+                                'recipients' => [$phoneNumber],
+                            ];
+
+                            $result = $smsSender->sendSingle($messageData);
+
+                            if (!isset($result['result']) || !$result['result']) {
+                                \Log::error('SMS gönderimi başarısız: ' . json_encode($result['error'] ?? []));
+                            }
+                        }
+
+                        \Filament\Facades\Filament::notify('success', __('Ticket assigned successfully'));
+                    })
+                    ->icon('heroicon-o-user-plus')
+                    ->visible(function ($record) {
+                        $user = auth()->user();
+                        return $user->hasRole('admin') || $user->hasRole('manager');
+                    })
+                    ->color('primary'),
+
+                Tables\Actions\Action::make('resolve')
+                    ->label(__('Resolve'))
+                    ->form([
+                        Forms\Components\Textarea::make('result_message')
+                            ->label(__('Result message'))
+                            ->required(),
+                        Forms\Components\DateTimePicker::make('solution_time')
+                            ->label(__('Solution time'))
+                            ->default(now())
+                            ->required(),
+                    ])
+                    ->action(function (array $data, Ticket $record) {
+                        // Status'u "Tamamlandı" olarak güncelle
+                        $completedStatus = \App\Models\TicketStatus::where('name', 'Tamamlandı')->first();
+                        if (!$completedStatus) {
+                            $completedStatus = \App\Models\TicketStatus::where('name', 'Completed')->first();
+                        }
+                        
+                        if ($completedStatus) {
+                            $record->status_id = $completedStatus->id;
+                        }
+                        
+                        $record->save();
+
+                        $ticketCreatedAt = $record->created_at->format('d.m.Y H:i');
+                        $ticketName = $record->name;
+                        $resultMessage = $data['result_message'];
+                        $smsSender = app(\App\Http\Helpers\SmsSender::class);
+                        $phoneNumber = $record->owner->phone;
+
+                        if ($phoneNumber) {
+                            $messageData = [
+                                'messageBody' => $ticketCreatedAt . ' tarihinde oluşturulan "' . $ticketName . '" başlıklı talebiniz çözüldü. Sonuç mesajı: ' . $resultMessage,
+                                'recipients' => [$phoneNumber],
+                            ];
+
+                            $result = $smsSender->sendSingle($messageData);
+
+                            if (!isset($result['result']) || !$result['result']) {
+                                \Log::error('SMS gönderimi başarısız: ' . json_encode($result['error'] ?? []));
+                            }
+                        }
+
+                        \Filament\Facades\Filament::notify('success', __('Ticket resolved successfully'));
+                    })
+                    ->visible(function ($record) {
+                        $user = auth()->user();
+                        return $user->hasRole('admin') || 
+                               $user->hasRole('manager') || 
+                               ($record->responsible_id && $record->responsible_id === $user->id);
+                    })
+                    ->icon('heroicon-o-document-check')
+                    ->color('success'),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
