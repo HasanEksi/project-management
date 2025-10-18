@@ -305,5 +305,6 @@
     "Comment": "Yorum",
     "Role": "Rol",
     "Permission": "İzin",
-    "Activity": "Aktivite"
+    "Activity": "Aktivite",
+    "Enter the estimated time in hours (e.g., 2.5 for 2 hours 30 minutes)": "Tahmin süresini saat cinsinden girin (örn: 2.5 = 2 saat 30 dakika)"
 }

@@ -56,7 +56,25 @@ class TicketResource extends Resource
                     ->schema([
                         Forms\Components\Grid::make()
                             ->schema([
-                                Forms\Components\Select::make('project_id')
+                                Forms\Components\Grid::make()
+                                    ->columns(12)
+                                    ->columnSpan(2)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('code')
+                                            ->label(__('Ticket code'))
+                                            ->visible(fn($livewire) => !($livewire instanceof CreateRecord))
+                                            ->columnSpan(2)
+                                            ->disabled(),
+
+                                        Forms\Components\TextInput::make('name')
+                                            ->label(__('Ticket name'))
+                                            ->required()
+                                            ->columnSpan(
+                                                fn($livewire) => !($livewire instanceof CreateRecord) ? 10 : 12
+                                            )
+                                            ->maxLength(255),
+                                    ]),
+                                    Forms\Components\Select::make('project_id')
                                     ->label(__('Project'))
                                     ->searchable()
                                     ->reactive()
@@ -87,25 +105,6 @@ class TicketResource extends Resource
                                     )
                                     ->default(fn() => request()->get('project'))
                                     ->required(),
-                                Forms\Components\Grid::make()
-                                    ->columns(12)
-                                    ->columnSpan(2)
-                                    ->schema([
-                                        Forms\Components\TextInput::make('code')
-                                            ->label(__('Ticket code'))
-                                            ->visible(fn($livewire) => !($livewire instanceof CreateRecord))
-                                            ->columnSpan(2)
-                                            ->disabled(),
-
-                                        Forms\Components\TextInput::make('name')
-                                            ->label(__('Ticket name'))
-                                            ->required()
-                                            ->columnSpan(
-                                                fn($livewire) => !($livewire instanceof CreateRecord) ? 10 : 12
-                                            )
-                                            ->maxLength(255),
-                                    ]),
-
                                 Forms\Components\Select::make('owner_id')
                                     ->label(__('Ticket owner'))
                                     ->searchable()
@@ -185,6 +184,7 @@ class TicketResource extends Resource
                                 Forms\Components\TextInput::make('estimation')
                                     ->label(__('Estimation time'))
                                     ->numeric()
+                                    ->helperText(__('Enter the estimated time in hours (e.g., 2.5 for 2 hours 30 minutes)'))
                                     ->columnSpan(2),
                             ]),
 
