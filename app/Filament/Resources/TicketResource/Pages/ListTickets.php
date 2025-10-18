@@ -26,7 +26,7 @@ class ListTickets extends ListRecords
 
     protected function getTableQuery(): Builder
     {
-        return parent::getTableQuery()
+        $query = parent::getTableQuery()
             ->where(function ($query) {
                 return $query->where('owner_id', auth()->user()->id)
                     ->orWhere('responsible_id', auth()->user()->id)
@@ -37,6 +37,14 @@ class ListTickets extends ListRecords
                             });
                     });
             });
+
+        // Proje filtresi
+        $projectId = request()->get('project');
+        if ($projectId && $projectId !== 'all') {
+            $query->where('project_id', $projectId);
+        }
+
+        return $query;
     }
 
     public function getTabs(): array
