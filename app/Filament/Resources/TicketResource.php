@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TicketResource\Pages;
 use App\Filament\Resources\TicketResource\RelationManagers;
-use App\Models\Epic;
 use App\Models\Project;
 use App\Models\Ticket;
 use App\Models\TicketPriority;
@@ -88,13 +87,6 @@ class TicketResource extends Resource
                                     )
                                     ->default(fn() => request()->get('project'))
                                     ->required(),
-                                Forms\Components\Select::make('epic_id')
-                                    ->label(__('Epic'))
-                                    ->searchable()
-                                    ->reactive()
-                                    ->options(function ($get, $set) {
-                                        return Epic::where('project_id', $get('project_id'))->pluck('name', 'id')->toArray();
-                                    }),
                                 Forms\Components\Grid::make()
                                     ->columns(12)
                                     ->columnSpan(2)
