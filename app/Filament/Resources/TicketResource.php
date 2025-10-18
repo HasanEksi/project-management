@@ -357,10 +357,9 @@ class TicketResource extends Resource
                     ->options(fn() => TicketPriority::all()->pluck('name', 'id')->toArray()),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-
                 Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
                     Tables\Actions\Action::make('assign')
                     ->label(__('Assign'))
                     ->form([
