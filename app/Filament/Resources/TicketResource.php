@@ -387,10 +387,6 @@ class TicketResource extends Resource
                         \Filament\Facades\Filament::notify('success', __('Ticket assigned successfully'));
                     })
                     ->icon('heroicon-o-user-plus')
-                    ->visible(function ($record) {
-                        $user = auth()->user();
-                        return $user->hasRole('admin') || $user->hasRole('manager');
-                    })
                     ->color('primary'),
 
                 Tables\Actions\Action::make('resolve')
@@ -437,12 +433,6 @@ class TicketResource extends Resource
                         }
 
                         \Filament\Facades\Filament::notify('success', __('Ticket resolved successfully'));
-                    })
-                    ->visible(function ($record) {
-                        $user = auth()->user();
-                        return $user->hasRole('admin') || 
-                               $user->hasRole('manager') || 
-                               ($record->responsible_id && $record->responsible_id === $user->id);
                     })
                     ->icon('heroicon-o-document-check')
                     ->color('success'),

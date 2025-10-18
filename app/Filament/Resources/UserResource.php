@@ -118,6 +118,11 @@ class UserResource extends Resource
                     ->sortable()
                     ->searchable(),
 
+                Tables\Columns\TextColumn::make('phone')
+                    ->label(__('Phone'))
+                    ->sortable()
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('socials')
                     ->label(__('Linked social networks'))
                     ->view('partials.filament.resources.social-icon'),
