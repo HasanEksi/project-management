@@ -306,5 +306,9 @@
     "Role": "Rol",
     "Permission": "İzin",
     "Activity": "Aktivite",
-    "Enter the estimated time in hours (e.g., 2.5 for 2 hours 30 minutes)": "Tahmin süresini saat cinsinden girin (örn: 2.5 = 2 saat 30 dakika)"
+    "Enter the estimated time in hours (e.g., 2.5 for 2 hours 30 minutes)": "Tahmin süresini saat cinsinden girin (örn: 2.5 = 2 saat 30 dakika)",
+    "Define relationships between this ticket and other tickets": "Bu talep ile diğer talepler arasındaki ilişkileri tanımlayın",
+    "Phone": "Telefon",
+    "Old status": "Eski durum",
+    "New status": "Yeni durum"
 }

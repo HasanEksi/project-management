@@ -2,11 +2,13 @@
 
 namespace App\Providers;
 
+use App\Http\Helpers\SmsSender;
 use App\Settings\GeneralSettings;
 use Filament\Facades\Filament;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Vite;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\ServiceProvider;
@@ -73,6 +75,18 @@ class AppServiceProvider extends ServiceProvider
         if (env('APP_FORCE_HTTPS') ?? false) {
             URL::forceScheme('https');
         }
+
+        // Register SMS notification channel
+        Notification::extend('sms', function ($app) {
+            return new class {
+                public function send($notifiable, $notification)
+                {
+                    $data = $notification->toSms($notifiable);
+                    $smsSender = new SmsSender();
+                    return $smsSender->sendSingle($data);
+                }
+            };
+        });
     }
 
     private function configureApp(): void

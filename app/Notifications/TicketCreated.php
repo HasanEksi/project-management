@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Http\Helpers\SmsSender;
 use App\Models\Ticket;
 use App\Models\User;
 use Filament\Notifications\Actions\Action;
@@ -36,7 +37,14 @@ class TicketCreated extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        return ['mail', 'database'];
+        $channels = ['mail', 'database'];
+        
+        // SMS gönder sadece talep sorumlusuna ve telefon numarası varsa
+        if ($this->ticket->responsible_id && $notifiable->id === $this->ticket->responsible_id && $notifiable->phone) {
+            $channels[] = 'sms';
+        }
+        
+        return $channels;
     }
 
     /**
@@ -73,5 +81,25 @@ class TicketCreated extends Notification implements ShouldQueue
                     ->url(fn() => route('filament.resources.tickets.share', $this->ticket->code)),
             ])
             ->getDatabaseMessage();
+    }
+
+    /**
+     * Get the SMS representation of the notification.
+     *
+     * @param mixed $notifiable
+     * @return array
+     */
+    public function toSms($notifiable): array
+    {
+        $message = __('A new ticket has just been created.') . "\n";
+        $message .= __('Ticket name:') . ' ' . $this->ticket->name . "\n";
+        $message .= __('Project:') . ' ' . $this->ticket->project->name . "\n";
+        $message .= __('Status:') . ' ' . $this->ticket->status->name . "\n";
+        $message .= __('Priority:') . ' ' . $this->ticket->priority->name;
+
+        return [
+            'messageBody' => $message,
+            'recipients' => [$notifiable->phone]
+        ];
     }
 }

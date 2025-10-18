@@ -74,50 +74,56 @@ class TicketResource extends Resource
                                             )
                                             ->maxLength(255),
                                     ]),
-                                    Forms\Components\Select::make('project_id')
-                                    ->label(__('Project'))
-                                    ->searchable()
-                                    ->reactive()
-                                    ->afterStateUpdated(function ($get, $set) {
-                                        $project = Project::where('id', $get('project_id'))->first();
-                                        if ($project?->status_type === 'custom') {
-                                            $set(
-                                                'status_id',
-                                                TicketStatus::where('project_id', $project->id)
-                                                    ->where('is_default', true)
-                                                    ->first()
-                                                    ?->id
-                                            );
-                                        } else {
-                                            $set(
-                                                'status_id',
-                                                TicketStatus::whereNull('project_id')
-                                                    ->where('is_default', true)
-                                                    ->first()
-                                                    ?->id
-                                            );
-                                        }
-                                    })
-                                    ->options(fn() => Project::where('owner_id', auth()->user()->id)
-                                        ->orWhereHas('users', function ($query) {
-                                            return $query->where('users.id', auth()->user()->id);
-                                        })->pluck('name', 'id')->toArray()
-                                    )
-                                    ->default(fn() => request()->get('project'))
-                                    ->required(),
-                                Forms\Components\Select::make('owner_id')
-                                    ->label(__('Ticket owner'))
-                                    ->searchable()
-                                    ->options(fn() => User::all()->pluck('name', 'id')->toArray())
-                                    ->default(fn() => auth()->user()->id)
-                                    ->disabled()
-                                    ->dehydrated()
-                                    ->required(),
+                                Forms\Components\Grid::make()
+                                    ->columns(3)
+                                    ->columnSpan(2)
+                                    ->schema([
+                                        Forms\Components\Select::make('project_id')
+                                            ->label(__('Project'))
+                                            ->searchable()
+                                            ->reactive()
+                                            ->afterStateUpdated(function ($get, $set) {
+                                                $project = Project::where('id', $get('project_id'))->first();
+                                                if ($project?->status_type === 'custom') {
+                                                    $set(
+                                                        'status_id',
+                                                        TicketStatus::where('project_id', $project->id)
+                                                            ->where('is_default', true)
+                                                            ->first()
+                                                            ?->id
+                                                    );
+                                                } else {
+                                                    $set(
+                                                        'status_id',
+                                                        TicketStatus::whereNull('project_id')
+                                                            ->where('is_default', true)
+                                                            ->first()
+                                                            ?->id
+                                                    );
+                                                }
+                                            })
+                                            ->options(fn() => Project::where('owner_id', auth()->user()->id)
+                                                ->orWhereHas('users', function ($query) {
+                                                    return $query->where('users.id', auth()->user()->id);
+                                                })->pluck('name', 'id')->toArray()
+                                            )
+                                            ->default(fn() => request()->get('project'))
+                                            ->required(),
 
-                                Forms\Components\Select::make('responsible_id')
-                                    ->label(__('Ticket responsible'))
-                                    ->searchable()
-                                    ->options(fn() => User::all()->pluck('name', 'id')->toArray()),
+                                        Forms\Components\Select::make('owner_id')
+                                            ->label(__('Ticket owner'))
+                                            ->searchable()
+                                            ->options(fn() => User::all()->pluck('name', 'id')->toArray())
+                                            ->default(fn() => auth()->user()->id)
+                                            ->disabled()
+                                            ->dehydrated()
+                                            ->required(),
+
+                                        Forms\Components\Select::make('responsible_id')
+                                            ->label(__('Ticket responsible'))
+                                            ->searchable()
+                                            ->options(fn() => User::all()->pluck('name', 'id')->toArray()),
+                                    ]),
 
                                 Forms\Components\Grid::make()
                                     ->columns(3)
@@ -189,6 +195,8 @@ class TicketResource extends Resource
                             ]),
 
                         Forms\Components\Repeater::make('relations')
+                            ->label(__('Ticket relations'))
+                            ->helperText(__('Define relationships between this ticket and other tickets'))
                             ->itemLabel(function (array $state) {
                                 $ticketRelation = TicketRelation::find($state['id'] ?? 0);
                                 if ($ticketRelation) {

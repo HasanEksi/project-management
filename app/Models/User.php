@@ -36,6 +36,7 @@ class User extends Authenticatable implements FilamentUser
         'type',
         'oidc_username',
         'email_verified_at',
+        'phone',
     ];
 
     /**
