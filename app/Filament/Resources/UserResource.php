@@ -111,27 +111,10 @@ class UserResource extends Resource
                 Tables\Columns\TagsColumn::make('roles.name')
                     ->label(__('Roles'))
                     ->limit(2),
-
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->label(__('Email verified at'))
-                    ->dateTime()
-                    ->sortable()
-                    ->searchable(),
-
                 Tables\Columns\TextColumn::make('phone')
                     ->label(__('Phone'))
                     ->sortable()
-                    ->searchable(),
-
-                Tables\Columns\TextColumn::make('socials')
-                    ->label(__('Linked social networks'))
-                    ->view('partials.filament.resources.social-icon'),
-
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label(__('Created at'))
-                    ->dateTime()
-                    ->sortable()
-                    ->searchable(),
+                    ->searchable()
             ])
             ->filters([
                 //
