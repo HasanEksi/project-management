@@ -313,18 +313,6 @@ class TicketResource extends Resource
     {
         return $table
             ->columns(self::tableColumns())
-            ->recordUrl(function ($record) {
-                // Kritik veya hata talepleri için özel stil
-                $priorityName = strtolower($record->priority->name);
-                $typeName = strtolower($record->type->name);
-                
-                if (in_array($priorityName, ['kritik', 'critical', 'yüksek', 'high']) || 
-                    in_array($typeName, ['hata', 'error', 'bug', 'kritik', 'critical'])) {
-                    return null; // URL'yi devre dışı bırak
-                }
-                
-                return null;
-            })
             ->recordClasses(function ($record) {
                 $priorityName = strtolower($record->priority->name);
                 $typeName = strtolower($record->type->name);
