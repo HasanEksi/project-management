@@ -449,9 +449,7 @@ class TicketResource extends Resource
                 ])
                 ->label(__('Actions'))
                 ->icon('heroicon-o-ellipsis-horizontal')
-                ->color('gray')
-                ->button()
-                ->size('sm'),
+                ->color('gray'),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
