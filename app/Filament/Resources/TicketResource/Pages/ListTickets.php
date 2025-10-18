@@ -8,6 +8,7 @@ use Filament\Pages\Actions;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class ListTickets extends ListRecords
 {
@@ -40,7 +41,7 @@ class ListTickets extends ListRecords
             });
     }
 
-    public function getTabs(): array
+    public function getTableTabs(): array
     {
         $projects = Project::where('owner_id', auth()->user()->id)
             ->orWhereHas('users', function ($query) {
