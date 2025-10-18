@@ -290,13 +290,22 @@ class TicketResource extends Resource
 
             Tables\Columns\TextColumn::make('priority.name')
                 ->label(__('Priority'))
-                ->formatStateUsing(fn($record) => new HtmlString('
-                            <div class="flex items-center gap-2 mt-1">
-                                <span class="filament-tables-color-column relative flex h-6 w-6 rounded-md"
-                                    style="background-color: ' . $record->priority->color . '"></span>
-                                <span>' . $record->priority->name . '</span>
-                            </div>
-                        '))
+                ->formatStateUsing(function ($record) {
+                    $priorityName = strtolower($record->priority->name);
+                    $typeName = strtolower($record->type->name);
+                    $isCritical = in_array($priorityName, ['kritik', 'critical', 'yüksek', 'high']) || 
+                                  in_array($typeName, ['hata', 'error', 'bug', 'kritik', 'critical']);
+                    
+                    $style = $isCritical ? 'font-weight: 600; color: #dc2626;' : '';
+                    
+                    return new HtmlString('
+                        <div class="flex items-center gap-2 mt-1" style="' . $style . '">
+                            <span class="filament-tables-color-column relative flex h-6 w-6 rounded-md"
+                                style="background-color: ' . $record->priority->color . '"></span>
+                            <span>' . $record->priority->name . '</span>
+                        </div>
+                    ');
+                })
                 ->sortable()
                 ->searchable(),
 
@@ -313,18 +322,6 @@ class TicketResource extends Resource
     {
         return $table
             ->columns(self::tableColumns())
-            ->recordClasses(function ($record) {
-                $priorityName = strtolower($record->priority->name);
-                $typeName = strtolower($record->type->name);
-                
-                // Kritik veya hata talepleri için vurgulu stil
-                if (in_array($priorityName, ['kritik', 'critical', 'yüksek', 'high']) || 
-                    in_array($typeName, ['hata', 'error', 'bug', 'kritik', 'critical'])) {
-                    return 'bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 font-semibold';
-                }
-                
-                return '';
-            })
             ->filters([
                 Tables\Filters\SelectFilter::make('project_id')
                     ->label(__('Project'))
