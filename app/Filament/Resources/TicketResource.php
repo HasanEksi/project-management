@@ -448,7 +448,7 @@ class TicketResource extends Resource
                     ->color('success'),
                 ])
                 ->label(__('Actions'))
-                ->icon('heroicon-o-ellipsis-horizontal')
+                ->icon('heroicon-o-dots-horizontal')
                 ->color('gray'),
             ])
             ->bulkActions([
