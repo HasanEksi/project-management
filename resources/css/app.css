@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom bisque background for high priority error tickets */
+.bg-bisque {
+    background-color: #FFE4C4 !important;
+}

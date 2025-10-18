@@ -17,6 +17,7 @@ module.exports = {
                 primary: colors.blue,
                 success: colors.green,
                 warning: colors.yellow,
+                bisque: '#FFE4C4',
             },
         },
     },

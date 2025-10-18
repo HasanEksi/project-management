@@ -322,6 +322,18 @@ class TicketResource extends Resource
     {
         return $table
             ->columns(self::tableColumns())
+            ->recordClasses(function ($record) {
+                $priorityName = strtolower($record->priority->name);
+                $typeName = strtolower($record->type->name);
+                $isHighPriority = in_array($priorityName, ['yüksek', 'high', 'kritik', 'critical']);
+                $isErrorType = in_array($typeName, ['hata', 'error', 'bug']);
+                
+                if ($isHighPriority && $isErrorType) {
+                    return 'bg-bisque';
+                }
+                
+                return null;
+            })
             ->filters([
                 Tables\Filters\SelectFilter::make('project_id')
                     ->label(__('Project'))
