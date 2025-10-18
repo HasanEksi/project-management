@@ -5,6 +5,7 @@ namespace App\Filament\Resources\TicketResource\Pages;
 use App\Filament\Resources\TicketResource;
 use App\Models\Project;
 use Filament\Pages\Actions;
+use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -26,7 +27,7 @@ class ListTickets extends ListRecords
 
     protected function getTableQuery(): Builder
     {
-        $query = parent::getTableQuery()
+        return parent::getTableQuery()
             ->where(function ($query) {
                 return $query->where('owner_id', auth()->user()->id)
                     ->orWhere('responsible_id', auth()->user()->id)
@@ -37,14 +38,6 @@ class ListTickets extends ListRecords
                             });
                     });
             });
-
-        // Proje filtresi
-        $projectId = request()->get('project');
-        if ($projectId && $projectId !== 'all') {
-            $query->where('project_id', $projectId);
-        }
-
-        return $query;
     }
 
     public function getTabs(): array
@@ -56,18 +49,14 @@ class ListTickets extends ListRecords
             ->get();
 
         $tabs = [
-            'all' => 'Tümü',
+            'all' => Tab::make('Tümü'),
         ];
 
         foreach ($projects as $project) {
-            $tabs[$project->id] = $project->name;
+            $tabs[$project->id] = Tab::make($project->name)
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('project_id', $project->id));
         }
 
         return $tabs;
-    }
-
-    public function getActiveTab(): string
-    {
-        return request()->get('project', 'all');
     }
 }
