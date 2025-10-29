@@ -261,7 +261,7 @@ class TicketResource extends Resource
             Tables\Columns\TextColumn::make('owner.name')
                 ->label(__('Owner'))
                 ->sortable()
-                ->formatStateUsing(fn($record) => view('components.user-avatar', ['user' => $record->owner]))
+                //->formatStateUsing(fn($record) => view('components.user-avatar', ['user' => $record->owner]))
                 ->searchable(),
 
             Tables\Columns\TextColumn::make('responsible.name')
