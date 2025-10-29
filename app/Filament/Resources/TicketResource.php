@@ -268,6 +268,7 @@ class TicketResource extends Resource
                 ->label(__('Responsible'))
                 ->sortable()
                 ->formatStateUsing(fn($record) => view('components.user-avatar', ['user' => $record->responsible]))
+                ->toggleable(isToggledHiddenByDefault: true)
                 ->searchable(),
 
             Tables\Columns\TextColumn::make('status.name')
@@ -284,6 +285,7 @@ class TicketResource extends Resource
 
             Tables\Columns\TextColumn::make('type.name')
                 ->label(__('Type'))
+                ->toggleable(isToggledHiddenByDefault: true)
                 ->formatStateUsing(
                     fn($record) => view('partials.filament.resources.ticket-type', ['state' => $record->type])
                 )
@@ -292,14 +294,15 @@ class TicketResource extends Resource
 
             Tables\Columns\TextColumn::make('priority.name')
                 ->label(__('Priority'))
+                ->toggleable(isToggledHiddenByDefault: true)
                 ->formatStateUsing(function ($record) {
                     $priorityName = strtolower($record->priority->name);
                     $typeName = strtolower($record->type->name);
-                    $isCritical = in_array($priorityName, ['kritik', 'critical', 'yüksek', 'high']) || 
+                    $isCritical = in_array($priorityName, ['kritik', 'critical', 'yüksek', 'high']) ||
                                   in_array($typeName, ['hata', 'error', 'bug', 'kritik', 'critical']);
-                    
+
                     $style = $isCritical ? 'font-weight: 600; color: #dc2626;' : '';
-                    
+
                     return new HtmlString('
                         <div class="flex items-center gap-2 mt-1" style="' . $style . '">
                             <span class="filament-tables-color-column relative flex h-6 w-6 rounded-md"
@@ -313,6 +316,7 @@ class TicketResource extends Resource
 
             Tables\Columns\TextColumn::make('created_at')
                 ->label(__('Created at'))
+                ->toggleable(isToggledHiddenByDefault: true)
                 ->dateTime()
                 ->sortable()
                 ->searchable(),
@@ -346,6 +350,11 @@ class TicketResource extends Resource
                 Tables\Filters\SelectFilter::make('status_id')
                     ->label(__('Status'))
                     ->multiple()
+                    ->default(function () {
+                        return TicketStatus::whereIn('name', ['Yapılacaklar', 'Devam Ediyor'])
+                            ->pluck('id')
+                            ->toArray();
+                    })
                     ->options(fn() => TicketStatus::all()->pluck('name', 'id')->toArray()),
 
                 Tables\Filters\SelectFilter::make('type_id')
@@ -423,11 +432,11 @@ class TicketResource extends Resource
                         if (!$completedStatus) {
                             $completedStatus = \App\Models\TicketStatus::where('name', 'Completed')->first();
                         }
-                        
+
                         if ($completedStatus) {
                             $record->status_id = $completedStatus->id;
                         }
-                        
+
                         $record->save();
 
                         $ticketCreatedAt = $record->created_at->format('d.m.Y H:i');
@@ -492,11 +501,11 @@ class TicketResource extends Resource
             $typeName = strtolower($record->type->name);
             $isHighPriority = in_array($priorityName, ['yüksek', 'high', 'kritik', 'critical']);
             $isErrorType = in_array($typeName, ['hata', 'error', 'bug']);
-            
+
             if ($isHighPriority && $isErrorType) {
                 return 'bg-bisque';
             }
-            
+
             return null;
         };
     }
