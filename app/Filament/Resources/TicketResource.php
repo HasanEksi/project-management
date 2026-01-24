@@ -389,7 +389,7 @@ class TicketResource extends Resource
                         $ticketName = $record->name;
                         $ticketPriority = $record->priority->name;
                         $ticketType = $record->type->name;
-                        $smsSender = app(\App\Http\Helpers\SmsSender::class);
+                        $smsSender = app(\App\Helpers\SmsSender::class);
                         $phoneNumber = $record->responsible->phone;
 
                         if ($phoneNumber) {
@@ -442,7 +442,7 @@ class TicketResource extends Resource
                         $ticketCreatedAt = $record->created_at->format('d.m.Y H:i');
                         $ticketName = $record->name;
                         $resultMessage = $data['result_message'];
-                        $smsSender = app(\App\Http\Helpers\SmsSender::class);
+                        $smsSender = app(\App\Helpers\SmsSender::class);
                         $phoneNumber = $record->owner->phone;
 
                         if ($phoneNumber) {

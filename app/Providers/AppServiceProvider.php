@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Http\Helpers\SmsSender;
+use App\Helpers\SmsSender;
 use App\Settings\GeneralSettings;
 use Filament\Facades\Filament;
 use Illuminate\Database\QueryException;

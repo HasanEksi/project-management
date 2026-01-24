@@ -2,7 +2,7 @@
 
 namespace App\Notifications;
 
-use App\Http\Helpers\SmsSender;
+use App\Helpers\SmsSender;
 use App\Models\Ticket;
 use App\Models\User;
 use Filament\Notifications\Actions\Action;
