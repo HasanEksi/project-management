@@ -8,7 +8,9 @@ use GuzzleHttp\Exception\RequestException;
 class SmsSender
 {
     private Client $client;
+
     private string $message;
+
     private array $recipients;
 
     public function __construct()
@@ -16,8 +18,8 @@ class SmsSender
         $this->client = new Client([
             'base_uri' => 'https://api.organikhaberlesme.com',
             'headers' => [
-                'X-Organik-Auth' => '09a8aaaaf2d54f01bf98f2b5c712a66d5978ce2f'
-            ]
+                'X-Organik-Auth' => env('ORGANIK_AUTH'),
+            ],
         ]);
     }
 
@@ -34,6 +36,7 @@ class SmsSender
     {
         $this->message = $message['messageBody'];
         $this->recipients = $message['recipients'];
+
         return $this->send();
     }
 
@@ -41,6 +44,7 @@ class SmsSender
     {
         $this->message = $message['messageBody'];
         $this->recipients = $message['recipients'];
+
         return $this->send();
     }
 
@@ -53,8 +57,8 @@ class SmsSender
                 'result' => false,
                 'error' => [
                     'code' => 500,
-                    'message' => $e->getMessage()
-                ]
+                    'message' => $e->getMessage(),
+                ],
             ];
         }
     }
@@ -64,14 +68,14 @@ class SmsSender
         $config = $this->getSmsConfig();
 
         if (empty($this->recipients)) {
-            throw new \Exception("Alıcılar boş olamaz.");
+            throw new \Exception('Alıcılar boş olamaz.');
         }
 
         if (empty($this->message)) {
-            throw new \Exception("Mesaj içeriği boş olamaz.");
+            throw new \Exception('Mesaj içeriği boş olamaz.');
         }
 
-        $this->recipients = array_map(fn($x) => str_replace(' ', '', $x), $this->recipients);
+        $this->recipients = array_map(fn ($x) => str_replace(' ', '', $x), $this->recipients);
 
         $messageBody = [
             'header' => 1638,
@@ -84,18 +88,19 @@ class SmsSender
 
         try {
             $response = $this->client->post('/sms/send', [
-                'json' => $messageBody
+                'json' => $messageBody,
             ]);
 
             $buffer = $response->getBody()->getContents();
+
             return json_decode($buffer, true);
         } catch (RequestException $e) {
             return [
                 'result' => false,
                 'error' => [
                     'code' => 500,
-                    'message' => $e->getMessage()
-                ]
+                    'message' => $e->getMessage(),
+                ],
             ];
         }
     }
@@ -104,6 +109,7 @@ class SmsSender
     {
         $response = $this->client->get('/sms/headers/get');
         $buffer = $response->getBody()->getContents();
+
         return json_decode($buffer, true);
     }
 
@@ -115,7 +121,7 @@ class SmsSender
             'defaultTitleId' => 1638,
             'otp' => false,
             'type' => 'sms',
-            'validity' => 48
+            'validity' => 48,
         ];
     }
 }
