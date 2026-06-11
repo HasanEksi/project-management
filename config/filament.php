@@ -201,9 +201,9 @@ return [
     */
 
     'broadcasting' => [
-        'echo' => in_array(env('BROADCAST_CONNECTION', env('BROADCAST_DRIVER')), ['reverb', 'pusher'], true) ? [
+        'echo' => in_array(env('BROADCAST_CONNECTION', 'reverb'), ['reverb', 'pusher'], true) ? [
             'broadcaster' => 'pusher',
-            'key' => env('REVERB_APP_KEY', env('PUSHER_APP_KEY')),
+            'key' => env('REVERB_APP_KEY', env('PUSHER_APP_KEY', 'talep-reverb-key')),
             'wsHost' => env('REVERB_HOST', env('PUSHER_HOST', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST))),
             'wsPort' => env('REVERB_PORT', 80),
             'wssPort' => env('REVERB_PORT', 443),

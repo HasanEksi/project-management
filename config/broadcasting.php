@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'default' => env('BROADCAST_CONNECTION', env('BROADCAST_DRIVER', 'null')),
+    'default' => env('BROADCAST_CONNECTION', 'reverb'),
 
     /*
     |--------------------------------------------------------------------------
@@ -32,11 +32,11 @@ return [
 
         'reverb' => [
             'driver' => 'pusher',
-            'key' => env('REVERB_APP_KEY', env('PUSHER_APP_KEY')),
-            'secret' => env('REVERB_APP_SECRET', env('PUSHER_APP_SECRET')),
+            'key' => env('REVERB_APP_KEY', env('PUSHER_APP_KEY', 'talep-reverb-key')),
+            'secret' => env('REVERB_APP_SECRET', env('PUSHER_APP_SECRET', env('APP_KEY'))),
             'app_id' => env('REVERB_APP_ID', env('PUSHER_APP_ID', 'talep')),
             'options' => [
-                'host' => env('REVERB_HOST', '127.0.0.1'),
+                'host' => env('REVERB_HOST', parse_url(env('APP_URL', 'http://127.0.0.1'), PHP_URL_HOST)),
                 'port' => env('REVERB_PORT', 443),
                 'scheme' => env('REVERB_SCHEME', 'https'),
                 'useTLS' => env('REVERB_SCHEME', 'https') === 'https',
