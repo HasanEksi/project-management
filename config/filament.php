@@ -201,14 +201,12 @@ return [
     */
 
     'broadcasting' => [
-
-         'echo' => [
-             'broadcaster' => 'pusher',
-             'key' => env('VITE_PUSHER_APP_KEY'),
-             'cluster' => env('VITE_PUSHER_APP_CLUSTER'),
-             'forceTLS' => true,
-         ],
-
+        'echo' => env('BROADCAST_DRIVER') === 'pusher' ? [
+            'broadcaster' => 'pusher',
+            'key' => env('PUSHER_APP_KEY'),
+            'cluster' => env('PUSHER_APP_CLUSTER', 'mt1'),
+            'forceTLS' => env('PUSHER_SCHEME', 'https') === 'https',
+        ] : null,
     ],
 
     /*

@@ -32,6 +32,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // Force HTTPS before any asset URLs are generated.
+        if (filter_var(env('APP_FORCE_HTTPS', false), FILTER_VALIDATE_BOOLEAN)) {
+            URL::forceScheme('https');
+        }
+
         // Configure application
         $this->configureApp();
         $this->configurePhpLimits();
@@ -71,11 +76,6 @@ class AppServiceProvider extends ServiceProvider
             __('Security'),
             __('Settings'),
         ]);
-
-        // Force HTTPS over HTTP
-        if (env('APP_FORCE_HTTPS') ?? false) {
-            URL::forceScheme('https');
-        }
 
         // Register SMS notification channel
         Notification::extend('sms', function ($app) {
