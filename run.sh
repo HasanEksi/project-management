@@ -23,6 +23,7 @@ export REVERB_SERVER_PORT="${REVERB_SERVER_PORT:-8080}"
 mkdir -p bootstrap/cache storage/app/public storage/framework/cache storage/framework/sessions storage/framework/views storage/logs
 chmod -R ugo+rwX bootstrap/cache storage
 php artisan storage:link || true
+php artisan optimize:clear || true
 
 php artisan queue:work &
 php artisan reverb:start --host="${REVERB_SERVER_HOST:-0.0.0.0}" --port="${REVERB_SERVER_PORT:-8080}" &

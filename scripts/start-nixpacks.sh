@@ -41,6 +41,8 @@ fi
 
 ln -sfn /app/storage/app/public public/storage
 
+php artisan optimize:clear || true
+
 if ! grep -q 'memory_limit' /assets/php-fpm.conf; then
     cat >> /assets/php-fpm.conf <<'EOF'
 
