@@ -34,6 +34,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Configure application
         $this->configureApp();
+        $this->configurePhpLimits();
 
         // Register custom Filament theme
         Filament::serving(function () {
@@ -117,6 +118,21 @@ class AppServiceProvider extends ServiceProvider
             Config::set('services.oidc.is_enabled', $settings->enable_oidc_login ?? false);
         } catch (QueryException $e) {
             // Error: No database configured yet
+        }
+    }
+
+    private function configurePhpLimits(): void
+    {
+        try {
+            $memoryLimit = env('PHP_MEMORY_LIMIT', '512M');
+            $postMaxSize = env('PHP_POST_MAX_SIZE', '30M');
+            $uploadMaxFileSize = env('PHP_UPLOAD_MAX_SIZE', '25M');
+
+            ini_set('memory_limit', $memoryLimit);
+            ini_set('post_max_size', $postMaxSize);
+            ini_set('upload_max_filesize', $uploadMaxFileSize);
+        } catch (\Throwable $e) {
+            // PHP configuration is not writable in some environments
         }
     }
 }

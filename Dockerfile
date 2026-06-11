@@ -22,6 +22,8 @@ RUN apt-get update -y && \
     composer install && \
     npm install && \
     php artisan key:generate && \
+    mkdir -p bootstrap/cache storage/app/public storage/framework/cache storage/framework/sessions storage/framework/views storage/logs && \
+    chmod -R ugo+rwX bootstrap/cache storage && \
     rm -rf /var/lib/apt/lists/*
 
 CMD [ "bash", "./run.sh"]
