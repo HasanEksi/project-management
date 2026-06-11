@@ -62,18 +62,21 @@ if ! grep -q 'client_max_body_size' /nginx.conf; then
 fi
 
 if ! grep -q "proxy_pass http://127.0.0.1:${REVERB_SERVER_PORT};" /nginx.conf; then
-    sed -i "/server_name localhost;/a\\
-\\
-        location ~ ^/(app|apps)/ {\\
-            proxy_http_version 1.1;\\
-            proxy_set_header Host \\$host;\\
-            proxy_set_header X-Forwarded-Host \\$host;\\
-            proxy_set_header X-Forwarded-Proto \\$scheme;\\
-            proxy_set_header X-Forwarded-For \\$proxy_add_x_forwarded_for;\\
-            proxy_set_header Upgrade \\$http_upgrade;\\
-            proxy_set_header Connection \\\"Upgrade\\\";\\
-            proxy_pass http://127.0.0.1:${REVERB_SERVER_PORT:-8080};\\
-        }" /nginx.conf
+    cat > /tmp/reverb-nginx-location.conf <<'NGINX'
+
+        location ~ ^/(app|apps)/ {
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "Upgrade";
+            proxy_pass http://127.0.0.1:__REVERB_SERVER_PORT__;
+        }
+NGINX
+    sed -i "s/__REVERB_SERVER_PORT__/${REVERB_SERVER_PORT}/g" /tmp/reverb-nginx-location.conf
+    sed -i "/server_name localhost;/r /tmp/reverb-nginx-location.conf" /nginx.conf
 fi
 
 php artisan reverb:start --host="${REVERB_SERVER_HOST:-0.0.0.0}" --port="${REVERB_SERVER_PORT:-8080}" &
