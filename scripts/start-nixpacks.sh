@@ -9,6 +9,18 @@ upload_max_filesize = 25M
 EOF
 export PHPRC=/tmp/safa-php-conf/limits.ini
 
+export BROADCAST_DRIVER=reverb
+export BROADCAST_CONNECTION=reverb
+export REVERB_APP_ID="${REVERB_APP_ID:-${PUSHER_APP_ID:-talep}}"
+export REVERB_APP_KEY="${REVERB_APP_KEY:-${PUSHER_APP_KEY:-${APP_KEY:-talep-local-key}}}"
+export REVERB_APP_SECRET="${REVERB_APP_SECRET:-${PUSHER_APP_SECRET:-${APP_KEY:-talep-local-secret}}}"
+export REVERB_HOST="${REVERB_HOST:-${APP_URL:-localhost}}"
+export REVERB_HOST="${REVERB_HOST#*://}"
+export REVERB_PORT="${REVERB_PORT:-443}"
+export REVERB_SCHEME="${REVERB_SCHEME:-https}"
+export REVERB_SERVER_HOST="${REVERB_SERVER_HOST:-0.0.0.0}"
+export REVERB_SERVER_PORT="${REVERB_SERVER_PORT:-8080}"
+
 mkdir -p \
     bootstrap/cache \
     storage/app/public \
@@ -49,5 +61,21 @@ if ! grep -q 'client_max_body_size' /nginx.conf; then
     sed -i '/server_name localhost;/a \        client_max_body_size 25m;' /nginx.conf
 fi
 
+if ! grep -q "proxy_pass http://127.0.0.1:${REVERB_SERVER_PORT};" /nginx.conf; then
+    sed -i "/server_name localhost;/a\\
+\\
+        location ~ ^/(app|apps)/ {\\
+            proxy_http_version 1.1;\\
+            proxy_set_header Host \\$host;\\
+            proxy_set_header X-Forwarded-Host \\$host;\\
+            proxy_set_header X-Forwarded-Proto \\$scheme;\\
+            proxy_set_header X-Forwarded-For \\$proxy_add_x_forwarded_for;\\
+            proxy_set_header Upgrade \\$http_upgrade;\\
+            proxy_set_header Connection \\\"Upgrade\\\";\\
+            proxy_pass http://127.0.0.1:${REVERB_SERVER_PORT:-8080};\\
+        }" /nginx.conf
+fi
+
+php artisan reverb:start --host="${REVERB_SERVER_HOST:-0.0.0.0}" --port="${REVERB_SERVER_PORT:-8080}" &
 php-fpm -y /assets/php-fpm.conf &
 nginx -c /nginx.conf
