@@ -29,24 +29,16 @@ class ListTickets extends ListRecords
     protected function getTableQuery(): Builder
     {
         return parent::getTableQuery()
-            ->where(function ($query) {
-                return $query->where('owner_id', auth()->user()->id)
-                    ->orWhere('responsible_id', auth()->user()->id)
-                    ->orWhereHas('project', function ($query) {
-                        return $query->where('owner_id', auth()->user()->id)
-                            ->orWhereHas('users', function ($query) {
-                                return $query->where('users.id', auth()->user()->id);
-                            });
-                    });
-            });
+            ->visibleTo(auth()->user());
     }
 
     public function getTableTabs(): array
     {
-        $projects = Project::whereHas('users', function ($query) {
-                return $query->where('users.id', auth()->user()->id);
+        $projects = Project::when(!auth()->user()->isAdmin(), function (Builder $query) {
+                return $query->whereHas('tickets', function (Builder $query) {
+                    return $query->visibleTo(auth()->user());
+                });
             })
-            ->orWhere('owner_id', auth()->user()->id)
             ->get();
 
         $tabs = [

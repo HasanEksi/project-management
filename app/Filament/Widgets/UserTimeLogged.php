@@ -2,8 +2,7 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Ticket;
-use App\Models\User;
+use App\Models\TicketHour;
 use Filament\Widgets\BarChartWidget;
 
 class UserTimeLogged extends BarChartWidget
@@ -29,14 +28,19 @@ class UserTimeLogged extends BarChartWidget
 
     protected function getData(): array
     {
-        $query = User::query();
-        $query->has('hours');
-        $query->limit(10);
+        $hours = TicketHour::query()
+            ->with('user')
+            ->whereHas('ticket', fn($query) => $query->visibleTo(auth()->user()))
+            ->selectRaw('user_id, SUM(value) as total_logged_hours')
+            ->groupBy('user_id')
+            ->limit(10)
+            ->get();
+
         return [
             'datasets' => [
                 [
                     'label' => __('Total time logged (hours)'),
-                    'data' => $query->get()->pluck('totalLoggedInHours')->toArray(),
+                    'data' => $hours->pluck('total_logged_hours')->toArray(),
                     'backgroundColor' => [
                         'rgba(54, 162, 235, .6)'
                     ],
@@ -45,7 +49,7 @@ class UserTimeLogged extends BarChartWidget
                     ],
                 ],
             ],
-            'labels' => $query->get()->pluck('name')->toArray(),
+            'labels' => $hours->map(fn($item) => $item->user?->name)->toArray(),
         ];
     }
 }

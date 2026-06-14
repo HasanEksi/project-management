@@ -6,6 +6,7 @@ use App\Notifications\TicketCreated;
 use App\Notifications\TicketStatusUpdated;
 use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,6 +25,25 @@ class Ticket extends Model implements HasMedia
         'status_id', 'project_id', 'code', 'order', 'type_id',
         'priority_id', 'estimation', 'epic_id', 'sprint_id'
     ];
+
+    public function scopeVisibleTo(Builder $query, User $user): Builder
+    {
+        if ($user->isAdmin()) {
+            return $query;
+        }
+
+        return $query->where(function (Builder $query) use ($user) {
+            return $query->where('owner_id', $user->id)
+                ->orWhere('responsible_id', $user->id);
+        });
+    }
+
+    public function isVisibleTo(User $user): bool
+    {
+        return $user->isAdmin()
+            || $this->owner_id === $user->id
+            || $this->responsible_id === $user->id;
+    }
 
     public static function boot()
     {

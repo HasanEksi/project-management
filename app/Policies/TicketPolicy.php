@@ -18,7 +18,7 @@ class TicketPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->can('List tickets');
+        return $user->isAdmin() || $user->can('List tickets');
     }
 
     /**
@@ -30,16 +30,8 @@ class TicketPolicy
      */
     public function view(User $user, Ticket $ticket)
     {
-        return $user->can('View ticket')
-            && (
-                $ticket->owner_id === $user->id
-                ||
-                $ticket->responsible_id === $user->id
-                ||
-                $ticket->project->users()->where('users.id', auth()->user()->id)->count()
-                ||
-                $ticket->project->owner_id === $user->id
-            );
+        return $user->isAdmin()
+            || ($user->can('View ticket') && $ticket->isVisibleTo($user));
     }
 
     /**
@@ -62,16 +54,8 @@ class TicketPolicy
      */
     public function update(User $user, Ticket $ticket)
     {
-        return $user->can('Update ticket')
-            && (
-                $ticket->owner_id === $user->id
-                ||
-                $ticket->responsible_id === $user->id
-                ||
-                $ticket->project->users()->where('users.id', auth()->user()->id)->count()
-                ||
-                $ticket->project->owner_id === $user->id
-            );
+        return $user->isAdmin()
+            || ($user->can('Update ticket') && $ticket->isVisibleTo($user));
     }
 
     /**
@@ -83,6 +67,7 @@ class TicketPolicy
      */
     public function delete(User $user, Ticket $ticket)
     {
-        return $user->can('Delete ticket');
+        return $user->isAdmin()
+            || ($user->can('Delete ticket') && $ticket->isVisibleTo($user));
     }
 }

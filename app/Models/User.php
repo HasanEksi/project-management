@@ -125,6 +125,11 @@ class User extends Authenticatable implements FilamentUser
         return true;
     }
 
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('Admin');
+    }
+
     public function getPendingEmail(): ?string
     {
         return null; // Bu projede pending email özelliği kullanılmıyor

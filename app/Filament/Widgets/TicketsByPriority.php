@@ -28,7 +28,9 @@ class TicketsByPriority extends DoughnutChartWidget
 
     protected function getData(): array
     {
-        $data = TicketPriority::withCount('tickets')->get();
+        $data = TicketPriority::withCount([
+            'tickets' => fn($query) => $query->visibleTo(auth()->user()),
+        ])->get();
         return [
             'datasets' => [
                 [

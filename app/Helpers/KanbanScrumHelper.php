@@ -94,6 +94,7 @@ trait KanbanScrumHelper
                     $query->where('project_id', $this->project->id);
                 }
                 $query->where('status_id', $item->id);
+                $query->visibleTo(auth()->user());
                 return [
                     'id' => $item->id,
                     'title' => $item->name,
@@ -127,16 +128,7 @@ trait KanbanScrumHelper
         if ($this->includeNotAffectedTickets) {
             $query->whereNull('responsible_id');
         }
-        $query->where(function ($query) {
-            return $query->where('owner_id', auth()->user()->id)
-                ->orWhere('responsible_id', auth()->user()->id)
-                ->orWhereHas('project', function ($query) {
-                    return $query->where('owner_id', auth()->user()->id)
-                        ->orWhereHas('users', function ($query) {
-                            return $query->where('users.id', auth()->user()->id);
-                        });
-                });
-        });
+        $query->visibleTo(auth()->user());
         return $query->get()
             ->map(fn(Ticket $item) => [
                 'id' => $item->id,
@@ -157,11 +149,13 @@ trait KanbanScrumHelper
     public function recordUpdated(int $record, int $newIndex, int $newStatus): void
     {
         $ticket = Ticket::find($record);
-        if ($ticket) {
+        if ($ticket && auth()->user()->can('update', $ticket)) {
             $ticket->order = $newIndex;
             $ticket->status_id = $newStatus;
             $ticket->save();
             Filament::notify('success', __('Ticket updated'));
+        } elseif ($ticket) {
+            abort(403);
         }
     }
 

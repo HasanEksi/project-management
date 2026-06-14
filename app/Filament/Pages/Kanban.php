@@ -33,11 +33,7 @@ class Kanban extends Page implements HasForms
         $this->project = $project;
         if ($this->project->type === 'scrum') {
             $this->redirect(route('filament.pages.scrum/{project}', ['project' => $project]));
-        } elseif (
-            $this->project->owner_id != auth()->user()->id
-            &&
-            !$this->project->users->where('id', auth()->user()->id)->count()
-        ) {
+        } elseif (!auth()->user()->isAdmin() && !$this->project->tickets()->visibleTo(auth()->user())->exists()) {
             abort(403);
         }
         $this->form->fill();

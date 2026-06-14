@@ -28,7 +28,9 @@ class TicketsByType extends DoughnutChartWidget
 
     protected function getData(): array
     {
-        $data = TicketType::withCount('tickets')->get();
+        $data = TicketType::withCount([
+            'tickets' => fn($query) => $query->visibleTo(auth()->user()),
+        ])->get();
         return [
             'datasets' => [
                 [

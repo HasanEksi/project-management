@@ -29,6 +29,7 @@ class TicketTimeLogged extends BarChartWidget
     protected function getData(): array
     {
         $query = Ticket::query();
+        $query->visibleTo(auth()->user());
         $query->has('hours');
         $query->limit(10);
         return [

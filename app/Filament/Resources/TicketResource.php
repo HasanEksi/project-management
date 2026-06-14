@@ -104,10 +104,12 @@ class TicketResource extends Resource
                                                     );
                                                 }
                                             })
-                                            ->options(fn() => Project::where('owner_id', auth()->user()->id)
-                                                ->orWhereHas('users', function ($query) {
-                                                    return $query->where('users.id', auth()->user()->id);
-                                                })->pluck('name', 'id')->toArray()
+                                            ->options(fn() => Project::when(!auth()->user()->isAdmin(), function ($query) {
+                                                return $query->where('owner_id', auth()->user()->id)
+                                                    ->orWhereHas('users', function ($query) {
+                                                        return $query->where('users.id', auth()->user()->id);
+                                                    });
+                                            })->pluck('name', 'id')->toArray()
                                             )
                                             ->default(fn() => request()->get('project'))
                                             ->required(),
@@ -231,7 +233,7 @@ class TicketResource extends Resource
                                             ->searchable()
                                             ->columnSpan(2)
                                             ->options(function ($livewire) {
-                                                $query = Ticket::query();
+                                                $query = Ticket::query()->visibleTo(auth()->user());
                                                 if ($livewire instanceof EditRecord && $livewire->record) {
                                                     $query->where('id', '<>', $livewire->record->id);
                                                 }
@@ -332,10 +334,11 @@ class TicketResource extends Resource
                 Tables\Filters\SelectFilter::make('project_id')
                     ->label(__('Project'))
                     ->multiple()
-                    ->options(fn() => Project::where('owner_id', auth()->user()->id)
-                        ->orWhereHas('users', function ($query) {
-                            return $query->where('users.id', auth()->user()->id);
-                        })->pluck('name', 'id')->toArray()),
+                    ->options(fn() => Project::when(!auth()->user()->isAdmin(), function ($query) {
+                        return $query->whereHas('tickets', function ($query) {
+                            return $query->visibleTo(auth()->user());
+                        });
+                    })->pluck('name', 'id')->toArray()),
 
                 Tables\Filters\SelectFilter::make('owner_id')
                     ->label(__('Owner'))

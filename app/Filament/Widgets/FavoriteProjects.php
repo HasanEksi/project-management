@@ -30,7 +30,7 @@ class FavoriteProjects extends BaseWidget
         $favoriteProjects = auth()->user()->favoriteProjects;
         $cards = [];
         foreach ($favoriteProjects as $project) {
-            $ticketsCount = $project->tickets()->count();
+            $ticketsCount = $project->tickets()->visibleTo(auth()->user())->count();
             $contributorsCount = $project->contributors->count();
             $cards[] = Card::make('', new HtmlString('
                     <div class="flex items-center gap-2 -mt-2 text-lg">
