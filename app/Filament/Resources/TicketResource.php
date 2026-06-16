@@ -119,6 +119,7 @@ class TicketResource extends Resource
                                             ->searchable()
                                             ->options(fn() => User::all()->pluck('name', 'id')->toArray())
                                             ->default(fn() => auth()->user()->id)
+                                            ->visible(fn($livewire) => !($livewire instanceof CreateRecord))
                                             ->disabled()
                                             ->dehydrated()
                                             ->required(),
@@ -126,6 +127,7 @@ class TicketResource extends Resource
                                         Forms\Components\Select::make('responsible_id')
                                             ->label(__('Ticket responsible'))
                                             ->searchable()
+                                            ->visible(fn($livewire) => !($livewire instanceof CreateRecord))
                                             ->options(fn() => User::all()->pluck('name', 'id')->toArray()),
                                     ]),
 
@@ -185,6 +187,37 @@ class TicketResource extends Resource
                         Forms\Components\RichEditor::make('content')
                             ->label(__('Ticket content'))
                             ->required()
+                            ->toolbarButtons(fn($livewire) => $livewire instanceof CreateRecord
+                                ? [
+                                    'attachFiles',
+                                    'blockquote',
+                                    'bold',
+                                    'bulletList',
+                                    'codeBlock',
+                                    'h2',
+                                    'h3',
+                                    'italic',
+                                    'link',
+                                    'orderedList',
+                                    'strike',
+                                    'underline',
+                                ]
+                                : [
+                                    'attachFiles',
+                                    'blockquote',
+                                    'bold',
+                                    'bulletList',
+                                    'codeBlock',
+                                    'h2',
+                                    'h3',
+                                    'italic',
+                                    'link',
+                                    'orderedList',
+                                    'redo',
+                                    'strike',
+                                    'underline',
+                                    'undo',
+                                ])
                             ->columnSpan(2),
 
                         Forms\Components\Grid::make()
@@ -195,12 +228,14 @@ class TicketResource extends Resource
                                     ->label(__('Estimation time'))
                                     ->numeric()
                                     ->helperText(__('Enter the estimated time in hours (e.g., 2.5 for 2 hours 30 minutes)'))
+                                    ->visible(fn($livewire) => !($livewire instanceof CreateRecord))
                                     ->columnSpan(2),
                             ]),
 
                         Forms\Components\Repeater::make('relations')
                             ->label(__('Ticket relations'))
                             ->helperText(__('Define relationships between this ticket and other tickets'))
+                            ->visible(fn($livewire) => !($livewire instanceof CreateRecord))
                             ->itemLabel(function (array $state) {
                                 $ticketRelation = TicketRelation::find($state['id'] ?? 0);
                                 if ($ticketRelation) {
