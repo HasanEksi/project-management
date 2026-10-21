@@ -39,7 +39,8 @@ COPY composer.json composer.lock ./
 RUN composer install --ignore-platform-reqs --no-interaction --no-progress --no-scripts --no-autoloader
 
 COPY . .
-RUN composer install --ignore-platform-reqs --no-interaction --no-progress \
+# package:discover boots the app; Pusher/Reverb settings only exist at runtime.
+RUN BROADCAST_DRIVER=log BROADCAST_CONNECTION=log composer install --ignore-platform-reqs --no-interaction --no-progress \
     && mkdir -p bootstrap/cache storage/framework/cache storage/framework/sessions storage/framework/views storage/logs \
     && chown -R nobody:nogroup bootstrap/cache storage
 
